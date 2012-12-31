@@ -1,9 +1,9 @@
 from unittest import TestCase
 
-from csscomp import split_selectors, StyleSheet
+from parse import split_selectors, parse_groups
 
 
-class TestBase(TestCase):
+class TestParse(TestCase):
     def test_split_selectors(self):
         self.assertEqual(split_selectors('a, b'), ['a', 'b'])
         self.assertEqual(split_selectors('a ,b'), ['a', 'b'])

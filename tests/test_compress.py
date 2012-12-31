@@ -1,9 +1,13 @@
 from unittest import TestCase
 
-from properties import compress_color, compress_font, compress_dimension
+from compress import compress_blocks, compress_color, compress_font, \
+        compress_dimension
 
 
 class TestProperties(TestCase):
+    def test_compress_blocks(self):
+        pass
+
     def test_compress_color(self):
         pass
 

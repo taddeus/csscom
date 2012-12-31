@@ -1,3 +1,10 @@
+def compress_blocks(blocks):
+    # Map of property stringification to list of containing blocks
+    #property_locations = {}
+
+    return blocks
+
+
 def compress_color(properties):
     return properties
 
