@@ -55,7 +55,6 @@ def parse_options():
                         help='filename for compressed output (default is '
                              'stdout)')
     args = parser.parse_args()
-    print args
 
     # Enable all compression options if none are explicitely enabled
     if not any([args.compress_whitespace, args.compress_color,
