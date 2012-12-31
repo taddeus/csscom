@@ -70,13 +70,13 @@ def generate_group(selectors, blocks, combine_blocks=True,
 
     for block_selectors, properties in blocks:
         if compress_color:
-            properties = compress.compress_color(properties)
+            compress.compress_color(properties)
 
         if compress_font:
-            properties = compress.compress_font(properties)
+            compress.compress_font(properties)
 
         if compress_dimension:
-            properties = compress.compress_dimension(properties)
+            compress.compress_dimension(properties)
 
         compressed_blocks.append(generate_block(block_selectors, properties,
             compress_whitespace=compress_whitespace,
