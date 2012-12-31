@@ -22,7 +22,10 @@ def compress_css(css, combine_blocks=True, compress_whitespace=True,
 
 
 def parse_options():
-    parser = ArgumentParser(description='Just another CSS compressor.')
+    parser = ArgumentParser(description='Just another CSS compressor. '
+            'If none of the compression options below (those starting with '
+            '"-c") are specified, all are enabled by default. If any are '
+            'specified, the others are not enabled.')
     parser.add_argument('files', metavar='FILE', nargs='+',
                         help='CSS files to compress')
     parser.add_argument('-cw', '--compress-whitespace', action='store_true',
@@ -52,8 +55,8 @@ def parse_options():
     if not any([args.compress_whitespace, args.compress_color,
                 args.compress_font, args.compress_dimension,
                 args.combine_blocks]) and not args.no_compression:
-        args.compress_whitespace = args.compress_color = args.compress_font = \
-                args.compress_dimension = args.combine_blocks = True
+        args.compress_whitespace = args.compress_color = args.compress_font \
+                = args.compress_dimension = args.combine_blocks = True
 
     return args
 
