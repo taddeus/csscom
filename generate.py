@@ -24,7 +24,6 @@ def _indented_block(selectors, inner, compress_whitespace=False, tab='\t'):
         lbracket = '{'
         rbracket = '}'
     else:
-        # TODO: use this?: comma = ',\n'
         comma = ', '
         lbracket = ' {'
         rbracket = '\n}'
@@ -53,7 +52,7 @@ def generate_block(selectors, properties, compress_whitespace=False,
                   for name, value in properties]
     inner = ';'.join(properties)
 
-    if not compress_whitespace:
+    if not compress_whitespace and len(inner):
         inner += ';'
 
     return _indented_block(selectors, inner,

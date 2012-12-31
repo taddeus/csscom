@@ -32,8 +32,7 @@ div {
         selectors = ['div', 'p']
         properties = [('color', '#000')]
         self.assertGenerates(selectors, properties, '''
-div,
-p {
+div, p {
     color: #000;
 }''')
 
