@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser
 import logging
-import sys
 
 from parse import parse_groups
 from generate import generate_group
@@ -56,10 +55,12 @@ def parse_options():
     parser.add_argument('-o', '--output', metavar='FILE',
                         help='filename for compressed output (default is '
                              'stdout)')
+    parser.add_argument('-ow', '--overwrite', action='store_true',
+                        help='use the first CSS file as output file')
     parser.add_argument('-v', '--verbose',
                         help='show which compressions are performed')
     parser.add_argument('-d', '--debug', help='show debug statements')
-    parser.add_argument('--logfile', metavar='FILE', default=sys.stderr,
+    parser.add_argument('--logfile', metavar='FILE',
                         help='file to write verbose/debug statements to '
                              '(defaults to stderr)')
     args = parser.parse_args()
@@ -84,11 +85,19 @@ def _content(filename):
 if __name__ == '__main__':
     args = parse_options()
     options = dict(args._get_kwargs())
+
     files = options.pop('files')
+
+    del options['no_compression']
+
     spaces = options.pop('spaces')
     options['tab'] = '\t' if spaces is None else spaces * ' '
-    output_file = options.pop('output')
-    del options['no_compression']
+
+    outfile = options.pop('output')
+
+    if options.pop('overwrite'):
+        outfile = files[0]
+
     log_level = logging.WARNING
 
     if options.pop('verbose'):
@@ -105,8 +114,8 @@ if __name__ == '__main__':
         css = '\n'.join(_content(filename) for filename in files)
         compressed = compress_css(css, **options)
 
-        if output_file:
-            open(output_file, 'w').write(compressed)
+        if outfile:
+            open(outfile, 'w').write(compressed)
         else:
             print compressed,
     except IOError as e:
