@@ -7,14 +7,15 @@ from generate import generate_group
 
 def compress_css(css, combine_blocks=True, compress_whitespace=True,
                  compress_color=True, compress_font=True,
-                 compress_dimension=True, sort_properties=True):
+                 compress_dimension=True, sort_properties=True, tab='\t'):
     groups = parse_groups(css)
     options = dict(combine_blocks=combine_blocks,
                    compress_whitespace=compress_whitespace,
                    compress_color=compress_color,
                    compress_font=compress_font,
                    compress_dimension=compress_dimension,
-                   sort_properties=sort_properties)
+                   sort_properties=sort_properties,
+                   tab=tab)
     compressed_groups = [generate_group(selectors, blocks, **options)
                          for selectors, blocks in groups]
     newlines = '' if compress_whitespace else '\n\n'
@@ -46,6 +47,9 @@ def parse_options():
                         help='don\'t apply any compression, just generate CSS')
     parser.add_argument('-ns', '--no-sort', action='store_false',
                         dest='sort_properties', help='sort property names')
+    parser.add_argument('-s', '--spaces', type=int, metavar='NUMBER',
+                        help='number of spaces to use for indenting (indent '
+                             'defaults to a single tab [\\t])')
     parser.add_argument('-o', '--output', metavar='FILE',
                         help='filename for compressed output (default is '
                              'stdout)')
@@ -72,6 +76,8 @@ if __name__ == '__main__':
     args = parse_options()
     options = dict(args._get_kwargs())
     files = options.pop('files')
+    spaces = options.pop('spaces')
+    options['tab'] = '\t' if spaces is None else spaces * ' '
     output_file = options.pop('output')
     del options['no_compression']
 
