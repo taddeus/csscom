@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser
 import logging
+import sys
 
 from parse import parse_groups
 from generate import generate_group
@@ -28,8 +29,9 @@ def parse_options():
             'If none of the compression options below (those starting with '
             '"-c") are specified, all are enabled by default. If any are '
             'specified, the others are not enabled.')
-    parser.add_argument('files', metavar='FILE', nargs='+',
-                        help='CSS files to compress')
+    parser.add_argument('files', metavar='FILE', nargs='*',
+                        help='CSS files to compress (CSS is read from stdin '
+                             'if no files are specified)')
     parser.add_argument('-cw', '--compress-whitespace', action='store_true',
                         help='omit unnecessary whitespaces and semicolons')
     parser.add_argument('-cc', '--compress-color', action='store_true',
@@ -97,6 +99,10 @@ if __name__ == '__main__':
     outfile = options.pop('output')
 
     if options.pop('overwrite'):
+        if not files:
+            print 'error: cannot use --overwrite option wihthout filenames'
+            sys.exit(1)
+
         outfile = files[0]
 
     log_level = logging.WARNING
@@ -112,7 +118,11 @@ if __name__ == '__main__':
             format='%(filename)s, line %(lineno)s: %(levelname)s: %(message)s')
 
     try:
-        css = '\n'.join(_content(filename) for filename in files)
+        if files:
+            css = '\n'.join(_content(filename) for filename in files)
+        else:
+            css = sys.stdin.read()
+
         compressed = compress_css(css, **options)
 
         if outfile:
