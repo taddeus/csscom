@@ -57,9 +57,10 @@ def parse_options():
                              'stdout)')
     parser.add_argument('-ow', '--overwrite', action='store_true',
                         help='use the first CSS file as output file')
-    parser.add_argument('-v', '--verbose',
+    parser.add_argument('-v', '--verbose', action='store_true',
                         help='show which compressions are performed')
-    parser.add_argument('-d', '--debug', help='show debug statements')
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='show debug statements')
     parser.add_argument('--logfile', metavar='FILE',
                         help='file to write verbose/debug statements to '
                              '(defaults to stderr)')
