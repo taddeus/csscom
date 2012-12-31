@@ -3,7 +3,7 @@ def split_selectors(raw_selector):
     Split a selector with commas and arbitrary whitespaces into a list of
     selector swith single-space whitespaces.
     """
-    return [' '.join(s.split()) for s in raw_selector.split(',')]
+    return filter(None, (' '.join(s.split()) for s in raw_selector.split(',')))
 
 
 def parse_groups(css):
@@ -16,20 +16,12 @@ def parse_groups(css):
     prev_char = None
     lineno = 1
     properties = []
-    current_group = root_group = []
-    groups = [(None, root_group)]
+    current_group = (None, [])
+    groups = []
     selectors = None
     comment = False
-
-    def parse_property():
-        assert selectors is not None
-
-        if stack.strip():
-            parts = stack.split(':', 1)
-            assert len(parts) == 2
-            name, value = map(str.strip, parts)
-            assert '\n' not in name
-            properties.append((name, value))
+    nesting_level = 0
+    property_name = None
 
     try:
         for c in css:
@@ -43,32 +35,59 @@ def parse_groups(css):
                 if char == '/' and prev_char == '*':
                     comment = False
             elif char == '{':
+                nesting_level += 1
+
                 # Block start
                 if selectors is not None:
-                    # Block is nested, save group selector
-                    current_group = []
-                    groups.append((selectors, current_group))
+                    # Block is nested, push current root group and continue
+                    # with this group
+                    if len(current_group[1]):
+                        groups.append(current_group)
+
+                    current_group = (selectors, [])
 
                 selectors = split_selectors(stack)
-                #print stack.strip(), '->', selectors
                 stack = ''
                 assert len(selectors)
             elif char == '}':
-                # Last property may not have been closed with a semicolon
-                parse_property()
+                assert nesting_level > 0
+                nesting_level -= 1
 
                 if selectors is None:
                     # Closing group
-                    current_group = root_group
+                    groups.append(current_group)
+                    current_group = (None, [])
                 else:
                     # Closing block
-                    current_group.append((selectors, properties))
+                    # Last property may not have been closed with a semicolon
+                    property_value = stack.strip()
+
+                    if len(property_value):
+                        assert property_name is not None
+                        properties.append((property_name, property_value))
+                        property_name = None
+                        stack = ''
+
+                    current_group[1].append((selectors, properties))
                     selectors = None
                     properties = []
-            elif char == ';':
-                # Property definition
-                parse_property()
+            elif char == ':' and nesting_level > 0:
+                assert selectors is not None
+                # Property name
+                property_name = stack.strip()
+                assert '\n' not in property_name
                 stack = ''
+            elif char == ';':
+                # Property value
+                property_value = stack.strip()
+
+                if len(property_value):
+                    assert property_name is not None
+                    properties.append((property_name, property_value))
+                    property_name = None
+                    stack = ''
+                else:
+                    assert property_name is None
             elif char == '*' and prev_char == '/':
                 # Comment start
                 comment = True
@@ -77,7 +96,17 @@ def parse_groups(css):
                 stack += char
 
             prev_char = char
+
+        if len(current_group[1]):
+            groups.append(current_group)
+
+        if stack.split() or nesting_level > 0:
+            char = '<EOF>'
+            raise AssertionError()
     except AssertionError:
-        raise Exception('unexpected \'%c\' on line %d' % (char, lineno))
+        if len(char) < 2:
+            char = "'" + char + "'"
+
+        raise Exception('unexpected %s on line %d' % (char, lineno))
 
     return groups
