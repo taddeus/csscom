@@ -19,20 +19,16 @@ def parse_groups(css):
     current_group = root_group = []
     groups = [(None, root_group)]
     selectors = None
-    multiline_comment = inline_comment = False
+    comment = False
 
     try:
         for c in css:
             char = c
 
-            if multiline_comment:
-                # Multiline comment end?
+            if comment:
+                # Comment end?
                 if c == '/' and prev_char == '*':
-                    multiline_comment = False
-            elif inline_comment:
-                # Inline comment end?
-                if c == '\n':
-                    inline_comment = False
+                    comment = False
             elif c == '{':
                 # Block start
                 if selectors is not None:
@@ -56,22 +52,25 @@ def parse_groups(css):
             elif c == ';':
                 # Property definition
                 assert selectors is not None
-                name, value = map(str.strip, stack.split(':', 1))
-                assert '\n' not in name
-                properties.append((name, value))
-                stack = ''
+
+                if stack.strip():
+                    parts = stack.split(':', 1)
+                    assert len(parts) == 2
+                    name, value = map(str.strip, parts)
+                    assert '\n' not in name
+                    properties.append((name, value))
+                    stack = ''
             elif c == '*' and prev_char == '/':
-                # Multiline comment start
-                multiline_comment = True
-            elif c == '/' and prev_char == '/':
-                # Inline comment start
-                inline_comment = True
+                # Comment start
+                comment = True
+                stack = stack[:-1]
             else:
                 if c == '\n':
                     lineno += 1
 
                 stack += c
-                prev_char = c
+
+            prev_char = c
     except AssertionError:
         raise Exception('unexpected \'%c\' on line %d' % (char, lineno))
 
