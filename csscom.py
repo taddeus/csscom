@@ -24,7 +24,7 @@ def compress_css(css, combine_blocks=True, compress_whitespace=True,
 def parse_options():
     parser = ArgumentParser(description='Just another CSS compressor.')
     parser.add_argument('files', metavar='FILE', nargs='+',
-                        help='list of CSS files to compress')
+                        help='CSS files to compress')
     parser.add_argument('-cw', '--compress-whitespace', action='store_true',
                         help='omit unnecessary whitespaces and semicolons')
     parser.add_argument('-cc', '--compress-color', action='store_true',
@@ -43,8 +43,9 @@ def parse_options():
                         help='don\'t apply any compression, just generate CSS')
     parser.add_argument('-ns', '--no-sort', action='store_false',
                         dest='sort_properties', help='sort property names')
-    parser.add_argument('-o', '--output', help='filename for compressed '
-                                               'output (default is stdout)')
+    parser.add_argument('-o', '--output', metavar='FILE',
+                        help='filename for compressed output (default is '
+                             'stdout)')
     args = parser.parse_args()
 
     # Enable all compression options if none are explicitely enabled
