@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser
+import logging
+import sys
 
 from parse import parse_groups
 from generate import generate_group
@@ -54,6 +56,12 @@ def parse_options():
     parser.add_argument('-o', '--output', metavar='FILE',
                         help='filename for compressed output (default is '
                              'stdout)')
+    parser.add_argument('-v', '--verbose',
+                        help='show which compressions are performed')
+    parser.add_argument('-d', '--debug', help='show debug statements')
+    parser.add_argument('--logfile', metavar='FILE', default=sys.stderr,
+                        help='file to write verbose/debug statements to '
+                             '(defaults to stderr)')
     args = parser.parse_args()
 
     # Enable all compression options if none are explicitely enabled
@@ -81,6 +89,17 @@ if __name__ == '__main__':
     options['tab'] = '\t' if spaces is None else spaces * ' '
     output_file = options.pop('output')
     del options['no_compression']
+    log_level = logging.WARNING
+
+    if options.pop('verbose'):
+        log_level = logging.INFO
+
+    if options.pop('debug'):
+        log_level = logging.DEBUG
+
+    logging.basicConfig(level=log_level, filename=options.pop('logfile'),
+                        #format='%(levelname)s: %(message)s')
+            format='%(filename)s, line %(lineno)s: %(levelname)s: %(message)s')
 
     try:
         css = '\n'.join(_content(filename) for filename in files)
