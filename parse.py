@@ -10,7 +10,7 @@ def parse_groups(css):
     """
     Parse CSS code one character at a time. This is more efficient than
     simply splitting on brackets, especially for large style sheets. All
-    comments are ignored (both inline and multiline).
+    comments are ignored.
     """
     stack = char = ''
     prev_char = None
