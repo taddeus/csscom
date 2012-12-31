@@ -35,11 +35,14 @@ def parse_groups(css):
         for c in css:
             char = c
 
+            if char == '\n':
+                lineno += 1
+
             if comment:
                 # Comment end?
-                if c == '/' and prev_char == '*':
+                if char == '/' and prev_char == '*':
                     comment = False
-            elif c == '{':
+            elif char == '{':
                 # Block start
                 if selectors is not None:
                     # Block is nested, save group selector
@@ -50,7 +53,7 @@ def parse_groups(css):
                 #print stack.strip(), '->', selectors
                 stack = ''
                 assert len(selectors)
-            elif c == '}':
+            elif char == '}':
                 # Last property may not have been closed with a semicolon
                 parse_property()
 
@@ -62,21 +65,18 @@ def parse_groups(css):
                     current_group.append((selectors, properties))
                     selectors = None
                     properties = []
-            elif c == ';':
+            elif char == ';':
                 # Property definition
                 parse_property()
                 stack = ''
-            elif c == '*' and prev_char == '/':
+            elif char == '*' and prev_char == '/':
                 # Comment start
                 comment = True
                 stack = stack[:-1]
             else:
-                if c == '\n':
-                    lineno += 1
+                stack += char
 
-                stack += c
-
-            prev_char = c
+            prev_char = char
     except AssertionError:
         raise Exception('unexpected \'%c\' on line %d' % (char, lineno))
 
