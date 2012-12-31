@@ -65,7 +65,7 @@ def _content(filename):
     return content
 
 
-if __name__ == '__main__':  # pragma: nocover
+if __name__ == '__main__':
     args = parse_options()
     options = dict(args._get_kwargs())
     files = options.pop('files')
