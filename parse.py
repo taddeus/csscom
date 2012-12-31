@@ -21,6 +21,16 @@ def parse_groups(css):
     selectors = None
     comment = False
 
+    def parse_property():
+        assert selectors is not None
+
+        if stack.strip():
+            parts = stack.split(':', 1)
+            assert len(parts) == 2
+            name, value = map(str.strip, parts)
+            assert '\n' not in name
+            properties.append((name, value))
+
     try:
         for c in css:
             char = c
@@ -41,6 +51,9 @@ def parse_groups(css):
                 stack = ''
                 assert len(selectors)
             elif c == '}':
+                # Last property may not have been closed with a semicolon
+                parse_property()
+
                 if selectors is None:
                     # Closing group
                     current_group = root_group
@@ -51,15 +64,8 @@ def parse_groups(css):
                     properties = []
             elif c == ';':
                 # Property definition
-                assert selectors is not None
-
-                if stack.strip():
-                    parts = stack.split(':', 1)
-                    assert len(parts) == 2
-                    name, value = map(str.strip, parts)
-                    assert '\n' not in name
-                    properties.append((name, value))
-                    stack = ''
+                parse_property()
+                stack = ''
             elif c == '*' and prev_char == '/':
                 # Comment start
                 comment = True
