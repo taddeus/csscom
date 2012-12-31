@@ -4,7 +4,7 @@ from compress import combine_blocks, compress_color, compress_font, \
         compress_dimension
 
 
-class TestProperties(TestCase):
+class TestCompress(TestCase):
     def test_combine_blocks(self):
         pass
 
