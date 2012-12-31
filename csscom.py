@@ -47,13 +47,15 @@ def parse_options():
                         help='don\'t apply any compression, just generate CSS')
     parser.add_argument('-ns', '--no-sort', action='store_false',
                         dest='sort_properties', help='sort property names')
-    parser.add_argument('-s', '--spaces', type=int, metavar='NUMBER',
+    parser.add_argument('-s', '--spaces', type=int, metavar='NUMBER=4',
+                        nargs='?', const=4,
                         help='number of spaces to use for indenting (indent '
                              'defaults to a single tab [\\t])')
     parser.add_argument('-o', '--output', metavar='FILE',
                         help='filename for compressed output (default is '
                              'stdout)')
     args = parser.parse_args()
+    print args
 
     # Enable all compression options if none are explicitely enabled
     if not any([args.compress_whitespace, args.compress_color,
