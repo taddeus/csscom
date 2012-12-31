@@ -63,7 +63,7 @@ def parse_options():
 
 def _content(filename):
     handle = open(filename, 'r')
-    content = '\n' + handle.read()
+    content = handle.read()
     handle.close()
     return content
 
