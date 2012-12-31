@@ -5,11 +5,11 @@ from parse import parse_groups
 from generate import generate_group
 
 
-def compress_css(css, compress_blocks=True, compress_whitespace=True,
+def compress_css(css, combine_blocks=True, compress_whitespace=True,
                  compress_color=True, compress_font=True,
                  compress_dimension=True, sort_properties=True):
     groups = parse_groups(css)
-    options = dict(compress_blocks=compress_blocks,
+    options = dict(combine_blocks=combine_blocks,
                    compress_whitespace=compress_whitespace,
                    compress_color=compress_color,
                    compress_font=compress_font,
@@ -35,7 +35,7 @@ def parse_options():
     parser.add_argument('-cd', '--compress-dimension', action='store_true',
                         help='replace separate margin/padding statements with '
                              'shortcut statements where possible')
-    parser.add_argument('-cb', '--compress-blocks', action='store_true',
+    parser.add_argument('-cb', '--combine-blocks', action='store_true',
                         help='combine or split blocks into blocks with '
                              'comma-separated selectors if it results in less '
                              'css code')
@@ -50,9 +50,9 @@ def parse_options():
     # Enable all compression options if none are explicitely enabled
     if not any([args.compress_whitespace, args.compress_color,
                 args.compress_font, args.compress_dimension,
-                args.compress_blocks]) and not args.no_compression:
+                args.combine_blocks]) and not args.no_compression:
         args.compress_whitespace = args.compress_color = args.compress_font = \
-                args.compress_dimension = args.compress_blocks = True
+                args.compress_dimension = args.combine_blocks = True
 
     return args
 

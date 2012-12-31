@@ -59,14 +59,14 @@ def generate_block(selectors, properties, compress_whitespace=False,
                            compress_whitespace=compress_whitespace, tab=tab)
 
 
-def generate_group(selectors, blocks, compress_blocks=True,
+def generate_group(selectors, blocks, combine_blocks=True,
                    compress_whitespace=True, compress_color=True,
                    compress_font=True, compress_dimension=True,
                    sort_properties=True, tab='\t'):
     compressed_blocks = []
 
-    if compress_blocks:
-        blocks = compress.compress_blocks(blocks)
+    if combine_blocks:
+        blocks = compress.combine_blocks(blocks)
 
     for block_selectors, properties in blocks:
         if compress_color:

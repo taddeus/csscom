@@ -1,4 +1,4 @@
-def compress_blocks(blocks):
+def combine_blocks(blocks):
     # Map of property stringification to list of containing blocks
     #property_locations = {}
 
